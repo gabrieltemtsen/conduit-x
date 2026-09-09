@@ -1,0 +1,22 @@
+{
+  "name": "@conduitx/mcp",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@conduitx/types": "workspace:*",
+    "@conduitx/receipts": "workspace:*",
+    "@conduitx/x402-hedera": "workspace:*",
+    "@conduitx/broker": "workspace:*",
+    "@conduitx/registry": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.6.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.4.5"
+  }
+}

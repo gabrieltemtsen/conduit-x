@@ -1,0 +1,17 @@
+{
+  "name": "@conduitx/receipts",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@conduitx/types": "workspace:*",
+    "@hashgraph/sdk": "^2.55.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}

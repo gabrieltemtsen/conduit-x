@@ -1,0 +1,50 @@
+{
+  "recipeId": "conduitx-defi-risk-analyzer",
+  "name": "ConduitX Multi-Provider DeFi Risk Pipeline",
+  "description": "Autonomous pipeline combining ConduitX Broker, The Graph Uniswap Subgraph, and Token Risk Radar over Hedera x402 settlement",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "step": 1,
+      "name": "Discover Providers",
+      "action": "conduitx:registry:discover",
+      "params": {
+        "categories": ["defi-pools", "token-risk"]
+      }
+    },
+    {
+      "step": 2,
+      "name": "Audit HCS Reputation",
+      "action": "conduitx:registry:reputation",
+      "params": {
+        "minCompositeScore": 80
+      }
+    },
+    {
+      "step": 3,
+      "name": "Procure Pool Analytics",
+      "action": "conduitx:broker:execute",
+      "params": {
+        "category": "defi-pools",
+        "query": "Top pools by TVL",
+        "maxBudgetHbar": 0.05
+      }
+    },
+    {
+      "step": 4,
+      "name": "Audit Token Risk",
+      "action": "conduitx:broker:execute",
+      "params": {
+        "category": "token-risk",
+        "query": "Risk audit for top pool tokens",
+        "maxBudgetHbar": 0.05
+      }
+    },
+    {
+      "step": 5,
+      "name": "Aggregate Report",
+      "action": "conduitx:analytics:compile",
+      "output": "summaryReport"
+    }
+  ]
+}

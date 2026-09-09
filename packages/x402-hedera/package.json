@@ -1,0 +1,19 @@
+{
+  "name": "@conduitx/x402-hedera",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "test": "tsx test/x402.test.ts",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@conduitx/types": "workspace:*",
+    "@conduitx/receipts": "workspace:*",
+    "@hashgraph/sdk": "^2.55.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
