@@ -119,6 +119,20 @@ pnpm install
 pnpm build
 ```
 
+### Environment Configuration
+Each package/service that talks to Hedera or The Graph ships a `.env.example` documenting the variables it reads — copy it to `.env` (or `.env.local` for the console app) and fill in real values:
+
+| Path | Needed for |
+|---|---|
+| `packages/receipts/.env.example` | HCS operator credentials + topic ID for publishing receipts |
+| `packages/x402-hedera/.env.example` | Buyer/seller Hedera accounts + facilitator URL for x402 settlement |
+| `services/seller-*/.env.example` | The Graph API key + seller Hedera account per data seller |
+| `services/registry/.env.example` | Seller endpoint URLs/accounts (defaults assume localhost) |
+| `services/broker/.env.example` | Port + standalone flag for the buyer agent |
+| `apps/console/.env.example` | Buyer account + HCS topic ID surfaced in the dashboard |
+
+Without live Hedera credentials, receipt publishing and payment settlement fall back to in-memory simulation so the stack still runs end-to-end locally — but the HashScan links won't resolve to real consensus messages until real testnet credentials are set.
+
 ### Running Tests
 ```bash
 # Run x402 + Hedera + HCS integration test suite
