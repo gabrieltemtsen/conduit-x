@@ -25,7 +25,7 @@ import {
 import { Panel, PanelHeader, Stat, Button, StatusDot, EmptyState } from './components/ui';
 import { McpModal } from './components/McpModal';
 
-const HCS_TOPIC_ID = '0.0.5694210';
+const DEFAULT_TOPIC_ID = '0.0.9840084';
 
 const DATASETS = [
   {
@@ -84,6 +84,7 @@ export default function ConsoleDashboard() {
   const [reputations, setReputations] = useState<ProviderReputation[]>([]);
   const [receipts, setReceipts] = useState<HCSReceiptMessage[]>([]);
   const [budgetStatus, setBudgetStatus] = useState({ budgetHbar: 2.0, totalSpentHbar: 0, initialBudgetHbar: 2.0 });
+  const [topicId, setTopicId] = useState(DEFAULT_TOPIC_ID);
   const [loading, setLoading] = useState(false);
   const [activeTask, setActiveTask] = useState<BrokerExecutionResult | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<'defi-pools' | 'token-risk' | 'wallet-portfolio'>('defi-pools');
@@ -103,6 +104,7 @@ export default function ConsoleDashboard() {
       if (svcRes.services) setServices(svcRes.services);
       if (repRes.reputations) setReputations(repRes.reputations);
       if (rcptRes.receipts) setReceipts(rcptRes.receipts);
+      if (rcptRes.topicId) setTopicId(rcptRes.topicId);
       if (bgtRes.budgetHbar !== undefined) setBudgetStatus(bgtRes);
     } catch (err) {
       console.error('Failed to load console data:', err);
@@ -217,12 +219,12 @@ export default function ConsoleDashboard() {
               unit="minted"
               detail={
                 <a
-                  href={`https://hashscan.io/testnet/topic/${HCS_TOPIC_ID}`}
+                  href={`https://hashscan.io/testnet/topic/${topicId}`}
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center gap-1 text-muted-foreground transition-colors duration-100 hover:text-primary"
                 >
-                  Topic {HCS_TOPIC_ID} <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                  Topic {topicId} <ExternalLink className="h-3 w-3" aria-hidden="true" />
                 </a>
               }
             />
@@ -421,7 +423,15 @@ export default function ConsoleDashboard() {
                   }
                 />
                 <div className="p-4">
-                  {activeTask?.steps && activeTask.steps.length > 0 ? (
+                  {loading ? (
+                    <div className="flex flex-col items-center justify-center py-14 text-center">
+                      <RefreshCw className="h-7 w-7 animate-spin text-primary" aria-hidden="true" />
+                      <p className="mt-3 text-xs font-semibold text-foreground">Executing Autonomous Procurement...</p>
+                      <p className="mt-1 max-w-sm text-[11px] text-muted-foreground">
+                        Discovering providers · Negotiating 402 challenge · Settling on Hedera · Minting HCS receipt
+                      </p>
+                    </div>
+                  ) : activeTask?.steps && activeTask.steps.length > 0 ? (
                     <ol className="space-y-4">
                       {activeTask.steps.map((step) => {
                         const isFailover = step.phase === 'FAILOVER';
@@ -512,7 +522,7 @@ export default function ConsoleDashboard() {
                   title="Immutable HCS Receipt Ledger"
                   right={
                     <a
-                      href={`https://hashscan.io/testnet/topic/${HCS_TOPIC_ID}`}
+                      href={`https://hashscan.io/testnet/topic/${topicId}`}
                       target="_blank"
                       rel="noreferrer"
                       className="flex items-center gap-1 text-[11px] font-medium text-primary transition-colors duration-100 hover:text-primary/80"
