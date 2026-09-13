@@ -1,5 +1,7 @@
 # ConduitX — The Decentralized Agent Data Vending Machine
 
+![ConduitX Banner](docs/images/cover.jpg)
+
 [![Hedera Network](https://img.shields.io/badge/Hedera-Testnet%20%7C%20HCS-008080.svg)](https://hashscan.io/testnet)
 [![The Graph](https://img.shields.io/badge/The%20Graph-Subgraph%20Studio-6366f1.svg)](https://thegraph.com/)
 [![x402 Protocol](https://img.shields.io/badge/x402-Payment%20Required-f59e0b.svg)](https://x402.org)
@@ -11,6 +13,16 @@
 > **"Agent payments have a rail. They don't have a market."**
 
 ConduitX is the decentralized market and execution layer for autonomous AI agents to discover, procure, meter, and cryptographically audit on-chain data. Agents buy blockchain data one query at a time, settle micro-cents in real-time over **x402 on Hedera**, and generate immutable execution receipts published to **Hedera Consensus Service (HCS)**. Those receipts form a tamper-proof, objective reputation signal that buyer agents audit before executing transactions.
+
+---
+
+## 🖥️ Workstation Dashboard & Execution Traces
+
+| Settlement Pipeline (Sub-2s Execution) | Delivered Subgraph Data (Uniswap v3) |
+|:---:|:---:|
+| ![Settlement Pipeline](docs/images/01_settlement_pipeline.png) | ![Delivered Subgraph Data](docs/images/02_delivered_subgraph_data.png) |
+| **Immutable HCS Receipt Ledger** | **Claude Desktop & Cursor (MCP Tooling)** |
+| ![HCS Receipts](docs/images/03_immutable_hcs_receipts.png) | ![MCP Agent Configuration](docs/images/04_mcp_agent_config.png) |
 
 ---
 
