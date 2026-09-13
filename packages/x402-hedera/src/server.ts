@@ -28,7 +28,11 @@ export class X402MeterServer {
     this.options = {
       serviceId: options.serviceId,
       providerName: options.providerName,
-      sellerAccountId: options.sellerAccountId || process.env.SELLER_HEDERA_ACCOUNT_ID || '0.0.5694201',
+      sellerAccountId:
+        options.sellerAccountId ||
+        process.env.SELLER_HEDERA_ACCOUNT_ID ||
+        process.env.PAY_TO_ACCOUNT ||
+        '0.0.9840136',
       network: options.network || (process.env.HEDERA_NETWORK as any) || 'testnet',
       baseFeeHbar: options.baseFeeHbar ?? 0.02,
       perRowFeeHbar: options.perRowFeeHbar ?? 0.001,
@@ -69,7 +73,10 @@ export class X402MeterServer {
       amountTinybars,
       currency: 'HBAR',
       serviceId: this.options.serviceId,
-      facilitatorUrl: process.env.BLOCKY402_FACILITATOR_URL || 'https://blocky402.testnet.hedera.market/settle',
+      facilitatorUrl:
+        process.env.BLOCKY402_FACILITATOR_URL ||
+        process.env.FACILITATOR_URL ||
+        'https://api.testnet.blocky402.com',
       challengeNonce: nonce,
       expiresAt: Date.now() + 5 * 60 * 1000,
       memo: `x402:${this.options.serviceId}:${nonce}`,

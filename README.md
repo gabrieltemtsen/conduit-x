@@ -1,14 +1,16 @@
 # ConduitX — The Decentralized Agent Data Vending Machine
 
-[![ETHOnline 2026](https://img.shields.io/badge/ETHOnline-2026-blueviolet.svg)](https://ethglobal.com/events/ethonline2026)
-[![Hedera Testnet](https://img.shields.io/badge/Hedera-Testnet-emerald.svg)](https://hashscan.io/testnet)
+[![Hedera Network](https://img.shields.io/badge/Hedera-Testnet%20%7C%20HCS-008080.svg)](https://hashscan.io/testnet)
 [![The Graph](https://img.shields.io/badge/The%20Graph-Subgraph%20Studio-6366f1.svg)](https://thegraph.com/)
 [![x402 Protocol](https://img.shields.io/badge/x402-Payment%20Required-f59e0b.svg)](https://x402.org)
 [![Model Context Protocol](https://img.shields.io/badge/MCP-Compatible-cyan.svg)](https://modelcontextprotocol.io/)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16%20Turbopack-black.svg)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178c6.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 > **"Agent payments have a rail. They don't have a market."**
 
-ConduitX is the missing market layer for AI agents to discover, procure, and audit blockchain data. Agents buy on-chain data one query at a time, pay micro-cents over **x402 on Hedera**, and every settled payment writes an immutable cryptographic receipt to **Hedera Consensus Service (HCS)**. Those receipts become the objective reputation signal the next agent reads before it buys.
+ConduitX is the decentralized market and execution layer for autonomous AI agents to discover, procure, meter, and cryptographically audit on-chain data. Agents buy blockchain data one query at a time, settle micro-cents in real-time over **x402 on Hedera**, and generate immutable execution receipts published to **Hedera Consensus Service (HCS)**. Those receipts form a tamper-proof, objective reputation signal that buyer agents audit before executing transactions.
 
 ---
 
@@ -52,25 +54,25 @@ flowchart TD
 
 ---
 
-## 🏆 Hackathon Partner Alignment & Judge Quick-Links
+## ⚡ Core Protocol Pillars & Infrastructure
 
-### 1. 🟢 Hedera — AI & Agentic Payments ($6,000 Pool)
-- **Live x402-Gated Metering**: Implemented in [`packages/x402-hedera`](file:///packages/x402-hedera) and [`services/meter`](file:///services/meter). Cost scales dynamically with query complexity (base fee + per-row returned) rather than a flat fee.
-- **Hedera Settlement**: Micro-payments settle on Hedera Testnet via Transfer transactions and Blocky402 facilitator.
-- **Immutable HCS Audit Trail**: Every completed query publishes a cryptographic receipt message to HCS Topic [`0.0.5694210`](https://hashscan.io/testnet/topic/0.0.5694210) via [`packages/receipts`](file:///packages/receipts).
-- **HCS Mirror Node Indexing**: Mirror Node REST queries read consensus receipts to compute live provider metrics.
+### 1. 🟢 Hedera Settlement & HCS Consensus Audit Trail
+- **Live x402-Gated Metering**: Implemented in [`packages/x402-hedera`](file:///packages/x402-hedera) and [`services/meter`](file:///services/meter). Dynamic query pricing scales based on complexity (base fee + per-row returned) rather than flat subscriptions.
+- **Micro-Payment Settlement**: Autonomous settlement on Hedera via native Transfer transactions and the Blocky402 facilitator with sub-second finality.
+- **Immutable HCS Audit Trail**: Every executed query publishes a cryptographic receipt message to HCS Topic [`0.0.5694210`](https://hashscan.io/testnet/topic/0.0.5694210) via [`packages/receipts`](file:///packages/receipts).
+- **HCS Mirror Node Indexing**: Mirror Node REST integration queries consensus timestamps and execution proofs to compute live, tamper-proof provider SLA metrics.
 
-### 2. 🟣 The Graph — Best AI Tooling / AI Use Case ($5,000 Pool · From Scratch)
-- **3 Real Subgraph Studio Data Sellers**:
-  - [`services/seller-pools`](file:///services/seller-pools): Live Uniswap v3 pool liquidity, 24h volume, fee tiers.
-  - [`services/seller-risk`](file:///services/seller-risk): Token security, holder concentration %, liquidity depth.
-  - [`services/seller-portfolio`](file:///services/seller-portfolio): Cross-protocol wallet balances, Aave debt, LP positions.
-- **Autonomous Reasoning & Failover**: The Broker agent (`services/broker`) uses on-chain receipt history to rank providers and executes automatic failover if a provider degrades or fails.
-- **Model Context Protocol (MCP) Server**: [`services/mcp`](file:///services/mcp) exposes reusable data procurement tools for Claude Desktop and Cursor.
+### 2. 🟣 The Graph Decentralized Data Providers
+- **Live Subgraph Studio Data Sellers**:
+  - [`services/seller-pools`](file:///services/seller-pools): Real-time Uniswap v3 pool liquidity, 24h trading volume, and fee tier analytics.
+  - [`services/seller-risk`](file:///services/seller-risk): Token security analysis, whale concentration %, and depth resilience metrics.
+  - [`services/seller-portfolio`](file:///services/seller-portfolio): Cross-protocol multi-chain wallet balances, Aave debt positions, and LP tokens.
+- **Autonomous Broker & Dynamic Failover**: The ConduitX Broker agent ([`services/broker`](file:///services/broker)) reads on-chain receipt history to rank providers dynamically and automatically fails over if a seller degrades or fails.
+- **Model Context Protocol (MCP) Server**: [`services/mcp`](file:///services/mcp) provides standard, plug-and-play procurement tools directly accessible to Claude Desktop, Cursor, and agent frameworks.
 
-### 3. 🟡 Bazantic ($2,000 Pool)
-- **Bazantic Recipe**: [`spec/bazantic-recipe.json`](file:///spec/bazantic-recipe.json) chains the ConduitX broker, The Graph Subgraphs, and Token Risk Radar into a unified autonomous research workflow.
-- **Agentified API**: Micro-metered HTTP gateway supporting x402 payment challenges.
+### 3. 🟡 Automated Workflow & Agent Recipes
+- **Composable Agent Recipes**: [`spec/bazantic-recipe.json`](file:///spec/bazantic-recipe.json) chains the ConduitX broker, The Graph Subgraphs, and Token Risk Radar into unified, automated risk assessment pipelines.
+- **Turnkey Developer Gateway**: Drop-in Express middleware that turns any existing API, GraphQL endpoint, or database into an x402-metered autonomous vending machine supporting x402 payment challenges.
 
 ---
 
@@ -187,11 +189,12 @@ $$\text{Score} = 0.35 \cdot \left(\frac{1}{\text{Price}}\right) + 0.45 \cdot \te
 
 ---
 
-## 🛡️ Spec-Driven & AI Transparency Disclosure
+## 🛡️ Specifications & Architecture Standards
 
-In accordance with hackathon guidelines:
-- **Spec-Driven Development**: All protocol designs, data schemas, and recipe workflows are documented in [`spec/conduitx-spec.md`](file:///spec/conduitx-spec.md) and [`spec/bazantic-recipe.json`](file:///spec/bazantic-recipe.json).
-- **AI Assisted**: AI pair-programming tools were utilized to assist in accelerating TypeScript scaffolding, UI design system styling, and GraphQL schema compilation. All architecture decisions, Hedera HCS integration, x402 metering logic, and broker failover algorithms were authored and validated specifically for ETHOnline 2026.
+ConduitX is built around strict, open, and verifiable interface contracts:
+- **Protocol Specification**: Complete protocol design, HTTP 402 challenge/response lifecycle, and HCS receipt envelope definitions are detailed in [`spec/conduitx-spec.md`](file:///spec/conduitx-spec.md).
+- **Automated Workflow Recipes**: Orchestration recipes for multi-step agent research and provider fallback are defined in [`spec/bazantic-recipe.json`](file:///spec/bazantic-recipe.json).
+- **Verifiable Receipt Standards**: Standardized HCS topic messages guarantee non-repudiation, client-side cryptographic verification, and mirror-node auditable SLA scoring.
 
 ---
 

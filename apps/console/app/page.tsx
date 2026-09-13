@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Activity,
   CheckCircle2,
@@ -91,7 +91,7 @@ export default function ConsoleDashboard() {
   const [activeTab, setActiveTab] = useState<'pipeline' | 'data' | 'reputation' | 'receipts'>('pipeline');
   const [showMcpModal, setShowMcpModal] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const [svcRes, repRes, rcptRes, bgtRes] = await Promise.all([
         fetch('/api/services').then((r) => r.json()),
@@ -107,13 +107,22 @@ export default function ConsoleDashboard() {
     } catch (err) {
       console.error('Failed to load console data:', err);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchData();
+    let ignore = false;
+    const init = async () => {
+      if (!ignore) {
+        await fetchData();
+      }
+    };
+    void init();
     const interval = setInterval(fetchData, 8000);
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      ignore = true;
+      clearInterval(interval);
+    };
+  }, [fetchData]);
 
   const runProcurement = async (category = selectedCategory, limit = customLimit) => {
     setLoading(true);
@@ -595,7 +604,7 @@ export default function ConsoleDashboard() {
       <McpModal open={showMcpModal} onClose={() => setShowMcpModal(false)} />
 
       <footer className="border-t border-border px-5 py-4 text-center text-[11px] text-muted-foreground">
-        ConduitX · ETHOnline 2026 · Built for Hedera, The Graph &amp; Bazantic
+        ConduitX · Decentralized Autonomous Agent Data Vending Machine · Powered by Hedera, The Graph &amp; x402
       </footer>
     </div>
   );

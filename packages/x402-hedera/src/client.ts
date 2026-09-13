@@ -11,10 +11,22 @@ export class X402PaymentClient {
   private config: BuyerWalletConfig;
 
   constructor(config: BuyerWalletConfig = {}) {
+    const rawNetwork = String(config.network || process.env.HEDERA_NETWORK || 'testnet');
+    const normalizedNetwork: 'mainnet' | 'testnet' = rawNetwork.includes('mainnet') ? 'mainnet' : 'testnet';
+
     this.config = {
-      accountId: config.accountId || process.env.BUYER_HEDERA_ACCOUNT_ID || '0.0.5694300',
-      privateKey: config.privateKey || process.env.BUYER_HEDERA_PRIVATE_KEY,
-      network: config.network || (process.env.HEDERA_NETWORK as any) || 'testnet'
+      accountId:
+        config.accountId ||
+        process.env.BUYER_HEDERA_ACCOUNT_ID ||
+        process.env.AGENT_ACCOUNT_ID ||
+        process.env.HEDERA_OPERATOR_ID ||
+        '0.0.5694300',
+      privateKey:
+        config.privateKey ||
+        process.env.BUYER_HEDERA_PRIVATE_KEY ||
+        process.env.AGENT_PRIVATE_KEY ||
+        process.env.HEDERA_OPERATOR_KEY,
+      network: normalizedNetwork
     };
   }
 
@@ -28,10 +40,35 @@ export class X402PaymentClient {
     if (this.config.accountId && this.config.privateKey) {
       try {
         const { Client, TransferTransaction, Hbar, AccountId, PrivateKey } = await import('@hashgraph/sdk');
-        const client = this.config.network === 'mainnet' ? Client.forMainnet() : Client.forTestnet();
+        const isMainnet = this.config.network === 'mainnet';
+        const client = isMainnet ? Client.forMainnet() : Client.forTestnet();
+
+        const cleanKey = this.config.privateKey.trim();
+        const keyType = (
+          process.env.BUYER_HEDERA_KEY_TYPE ||
+          process.env.AGENT_KEY_TYPE ||
+          process.env.HEDERA_OPERATOR_KEY_TYPE ||
+          ''
+        ).toLowerCase();
+
+        let parsedPrivateKey: InstanceType<typeof PrivateKey>;
+        if (keyType === 'ecdsa' || cleanKey.startsWith('0x')) {
+          try {
+            parsedPrivateKey = PrivateKey.fromStringECDSA(cleanKey);
+          } catch {
+            parsedPrivateKey = PrivateKey.fromString(cleanKey);
+          }
+        } else {
+          try {
+            parsedPrivateKey = PrivateKey.fromString(cleanKey);
+          } catch {
+            parsedPrivateKey = PrivateKey.fromStringECDSA(cleanKey);
+          }
+        }
+
         client.setOperator(
           AccountId.fromString(this.config.accountId),
-          PrivateKey.fromString(this.config.privateKey)
+          parsedPrivateKey
         );
 
         const amountHbar = Number((Number(challenge.amountTinybars) / 100_000_000).toFixed(8));
@@ -46,8 +83,9 @@ export class X402PaymentClient {
         if (receipt.status.toString() === 'SUCCESS') {
           txId = tx.transactionId.toString();
         }
-      } catch (err: any) {
-        console.warn(`[X402 Client] Live transfer fallback: ${err.message}`);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn(`[X402 Client] Live transfer fallback: ${msg}`);
       }
     }
 

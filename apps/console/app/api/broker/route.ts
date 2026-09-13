@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const startTime = Date.now();
     let stepIndex = 0;
 
-    const addStep = (phase: BrokerStep['phase'], title: string, detail: string, metadata?: any) => {
+    const addStep = (phase: BrokerStep['phase'], title: string, detail: string, metadata?: Record<string, unknown>) => {
       steps.push({
         stepIndex: ++stepIndex,
         timestamp: Date.now(),
@@ -118,13 +118,13 @@ export async function POST(req: NextRequest) {
       'Submitting X-PAYMENT cryptographic proof header to provider gateway...'
     );
 
-    let deliveredData: any;
+    let deliveredData: unknown;
     if (selected.id === 'seller-pools') {
       deliveredData = await queryGraphPools(rows);
     } else if (selected.id === 'seller-risk') {
-      deliveredData = await queryTokenRisk(task.params?.symbols);
+      deliveredData = await queryTokenRisk(task.params?.symbols as string[] | undefined);
     } else {
-      deliveredData = await queryWalletPortfolio(task.params?.walletAddress);
+      deliveredData = await queryWalletPortfolio(task.params?.walletAddress as string | undefined);
     }
 
     const latencyMs = Date.now() - startTime;
@@ -154,7 +154,7 @@ export async function POST(req: NextRequest) {
       'RECORD_HCS',
       'HCS Cryptographic Audit Receipt Written',
       `Receipt ID: ${receipt.receiptId} | HashScan Link: ${receipt.hashScanUrl} | Topic: ${process.env.HEDERA_HCS_TOPIC_ID || '0.0.5694210'}`,
-      { receipt }
+      { receipt: receipt as unknown as Record<string, unknown> }
     );
 
     addStep(
@@ -180,7 +180,8 @@ export async function POST(req: NextRequest) {
     };
 
     return NextResponse.json(result);
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 400 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ success: false, error: message }, { status: 400 });
   }
 }

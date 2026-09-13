@@ -14,14 +14,18 @@ export class HCSReceiptService {
   private sequenceCounter: number = 100;
 
   constructor(config: HCSConfig = {}) {
+    const rawNetwork = String(config.network || process.env.HEDERA_NETWORK || 'testnet');
+    const normalizedNetwork: 'mainnet' | 'testnet' = rawNetwork.includes('mainnet') ? 'mainnet' : 'testnet';
+
     this.config = {
-      operatorAccountId: config.operatorAccountId || process.env.HEDERA_OPERATOR_ID,
-      operatorPrivateKey: config.operatorPrivateKey || process.env.HEDERA_OPERATOR_KEY,
-      topicId: config.topicId || process.env.HEDERA_HCS_TOPIC_ID || '0.0.5694210',
-      network: config.network || (process.env.HEDERA_NETWORK as any) || 'testnet',
+      operatorAccountId: config.operatorAccountId || process.env.HEDERA_OPERATOR_ID || process.env.AGENT_ACCOUNT_ID,
+      operatorPrivateKey: config.operatorPrivateKey || process.env.HEDERA_OPERATOR_KEY || process.env.AGENT_PRIVATE_KEY,
+      topicId: config.topicId || process.env.HEDERA_HCS_TOPIC_ID || process.env.HEDERA_ATTEST_TOPIC_ID || '0.0.9840084',
+      network: normalizedNetwork,
       mirrorNodeUrl:
         config.mirrorNodeUrl ||
         process.env.HEDERA_MIRROR_NODE_URL ||
+        process.env.MIRROR_NODE_URL ||
         'https://testnet.mirrornode.hedera.com'
     };
   }
@@ -44,10 +48,30 @@ export class HCSReceiptService {
     if (this.config.operatorAccountId && this.config.operatorPrivateKey && this.config.topicId) {
       try {
         const { Client, TopicMessageSubmitTransaction, AccountId, PrivateKey, TopicId } = await import('@hashgraph/sdk');
-        const client = this.config.network === 'mainnet' ? Client.forMainnet() : Client.forTestnet();
+        const isMainnet = this.config.network === 'mainnet';
+        const client = isMainnet ? Client.forMainnet() : Client.forTestnet();
+
+        const cleanKey = this.config.operatorPrivateKey.trim();
+        const keyType = (process.env.HEDERA_OPERATOR_KEY_TYPE || process.env.AGENT_KEY_TYPE || '').toLowerCase();
+        let parsedPrivateKey: InstanceType<typeof PrivateKey>;
+
+        if (keyType === 'ecdsa' || cleanKey.startsWith('0x')) {
+          try {
+            parsedPrivateKey = PrivateKey.fromStringECDSA(cleanKey);
+          } catch {
+            parsedPrivateKey = PrivateKey.fromString(cleanKey);
+          }
+        } else {
+          try {
+            parsedPrivateKey = PrivateKey.fromString(cleanKey);
+          } catch {
+            parsedPrivateKey = PrivateKey.fromStringECDSA(cleanKey);
+          }
+        }
+
         client.setOperator(
           AccountId.fromString(this.config.operatorAccountId),
-          PrivateKey.fromString(this.config.operatorPrivateKey)
+          parsedPrivateKey
         );
 
         const tx = await new TopicMessageSubmitTransaction()
@@ -59,8 +83,9 @@ export class HCSReceiptService {
         if (record.consensusTimestamp) {
           fullReceipt.consensusTimestamp = record.consensusTimestamp.toString();
         }
-      } catch (err: any) {
-        console.warn(`[HCS] Live submission fallback to cached ledger: ${err.message}`);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn(`[HCS] Live submission fallback to cached ledger: ${msg}`);
       }
     }
 
